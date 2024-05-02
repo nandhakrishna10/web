@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Search and Dynamic Form Submission</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h2>Live Search</h2>
+<!-- Step 2: Live Search - Create input and search results container -->
+<input type="text" id="searchInput" placeholder="Search...">
+<div id="searchResults"></div>
+
+<h2>Dynamic Form Submission</h2>
+<!-- Step 4: Dynamic Form Submission - Create form -->
+<form id="myForm">
+    <input type="text" name="username" placeholder="Username">
+    <input type="email" name="email" placeholder="Email">
+    <button type="submit">Submit</button>
+</form>
+
+<div id="submitResponse"></div>
+
+<!-- Step 6: Updating Parts of the Page Without Refreshing -->
+<h2>Dynamic Content</h2>
+<div id="dynamicContent"></div>
+
+<script>
+$(document).ready(function(){
+    // Function to display search results
+    function displayResults(results) {
+        var html = '';
+        if (results.length > 0) {
+            $.each(results, function(index, result){
+                html += '<p><strong>' + result.name + '</strong>: ' + result.description + '</p>';
+            });
+        } else {
+            html = '<p>No results found</p>';
+        }
+        $('#searchResults').html(html);
+    }
+
+    // Submit search form
+    $('#searchInput').on('keyup', function(){
+        var searchText = $(this).val();
+        if(searchText !== ''){
+            $.ajax({
+                url: 'search.php',
+                method: 'POST',
+                data: {query: searchText},
+                dataType: 'json',
+                success: function(response){
+                    displayResults(response);
+                }
+            });
+        } else {
+            $('#searchResults').html('');
+        }
+    });
+
+    // Step 5: Intercept the form submission using AJAX to prevent the default behavior, then submit the form data asynchronously
+    $('#myForm').submit(function(event) {
+        event.preventDefault(); // Prevent default form submission
+        var formData = $(this).serialize();
+        $.ajax({
+            url: 'submit.php', // URL to your server-side script handling form submission
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                // Handle success response
+                console.log(response);
+                $('#submitResponse').html(response); // Display the response
+            },
+            error: function(xhr, status, error) {
+                // Handle error response
+                console.error(error);
+            }
+        });
+    });
+
+    // Step 7: Use AJAX to fetch new content from the server and update the container periodically
+    function updateDynamicContent() {
+        $.ajax({
+            url: 'dynamic-content.php', // URL to your server-side script returning dynamic content
+            method: 'GET',
+            success: function(response) {
+                $('#dynamicContent').html(response);
+            }
+        });
+    }
+
+    // Update dynamic content every 5 seconds
+    setInterval(updateDynamicContent, 5000);
+});
+</script>
+
+</body>
+</html>
