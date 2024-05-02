@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description">
+    <title>Stock Maintenance</title>
+    <link rel="icon" href="images/icon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+	<style>
+        #image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        #topimage {
+            
+            width: 100%;
+            height: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #content-container {
+            position: relative;
+            z-index: 2;
+            background-color: white;
+        }
+		form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: grey;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #C7C3BA;
+        }
+    </style>
+</head>
+
+   <body onload="loadCSVData()" onscroll="moveImage()">
+    <div class="navbar" id="nav">
+        <a href="#home">Home</a>
+        <a href="#contacts-header">Products</a>
+        <a href="#foot">Contact</a>
+        <a href="about.html">About</a>
+        </a>
+    </div>
+
+    <div id="image-container">
+        <img id="topimage" class="image" src="images/stock.jpg" alt="icon">
+    </div>
+
+	<div id="content-container"></div>
+    <h1 id="contacts-header">Stock Maintenance</h1>
+
+    <div id="stock">
+        <div class="table-container">
+            <table>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Opening Stock</th>
+                        <th>Purchase Stock</th>
+                        <th>Sales Stock</th>
+                        <th>Current Stock</th>
+                    </tr>
+            
+            </table>
+        </div>
+    </div>
+
+    <button id="addStockButton" style="display: none;" onclick="addStock()">Add Stock</button>
+
+    <form id="addStockForm" style="display: none;">
+        <label for="productId">Product ID:</label>
+        <input type="text" id="productId" name="productId" required>
+
+        <label for="openingStock">Opening Stock:</label>
+        <input type="text" id="openingStock" name="openingStock" required>
+
+        <label for="purchaseStock">Purchase Stock:</label>
+        <input type="text" id="purchaseStock" name="purchaseStock" required>
+
+        <label for="salesStock">Sales Stock:</label>
+        <input type="text" id="salesStock" name="salesStock" required>
+
+        <button type="button" onclick="submitStock()">Submit</button>
+    </form>
+
+    
+
+    <section id="productDetails">
+        <h2>Product Details</h2>
+        <form id="productForm">
+            <label for="productCode">Product Code:</label>
+            <input type="text" id="productCode" name="productCode" required>
+
+            <label for="productName">Product Name:</label>
+            <input type="text" id="productName" name="productName" required>
+
+            <label for="openingStock">Opening Stock:</label>
+            <input type="text" id="openingStock" name="openingStock" required>
+
+            <label for="productPrice">Price:</label>
+            <input type="text" id="productPrice" name="productPrice" required>
+
+            <button type="button" onclick="addProduct()">Add Product</button>
+            <button type="button" onclick="updateProduct()">Update Product</button>
+            <button type="button" onclick="deleteProduct()">Delete Product</button>
+        </form>
+    </section>
+
+    <section id="purchaseDetails">
+        <h2>Purchase Details</h2>
+        <form id="purchaseForm">
+            <label for="purchaseStock">Stock:</label>
+            <input type="text" id="purchaseStock" name="purchaseStock" required>
+
+            <label for="purchaseQuantity">Quantity:</label>
+            <input type="text" id="purchaseQuantity" name="purchaseQuantity" required>
+
+            <label for="purchasePrice">Price:</label>
+            <input type="text" id="purchasePrice" name="purchasePrice" required>
+
+            <button type="button" onclick="recordPurchase()">Record Purchase</button>
+        </form>
+    </section>
+
+    <section id="salesDetails">
+        <h2>Sales Details</h2>
+        <form id="salesForm">
+            <label for="salesDate">Date:</label>
+            <input type="text" id="salesDate" name="salesDate" required>
+
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" name="customerName" required>
+
+            <label for="salesProductCode">Product Code:</label>
+            <input type="text" id="salesProductCode" name="salesProductCode" required>
+
+            <label for="salesQuantity">Quantity:</label>
+            <input type="text" id="salesQuantity" name="salesQuantity" required>
+
+            <label for="salesPrice">Price:</label>
+            <input type="text" id="salesPrice" name="salesPrice" required>
+
+            <button type="button" onclick="recordSales()">Record Sales</button>
+        </form>
+    </section>
+
+    <section id="stockDetails">
+        <h2>Stock Details</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Opening Stock</th>
+                        <th>Purchase Stock</th>
+                        <th>Sales Stock</th>
+                        <th>Current Stock</th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody">
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <hr>
+    <div class="footer" id="foot">
+        <address>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <svg width="100" height="100">
+                <circle cx="50" cy="50" r="40" stroke="white" stroke-width="4" fill="grey" />
+            </svg>
+            <h6>Created by Nandha Krishna</h6>
+            <div style="margin-top: 10px;">
+                <a href="https://github.com/nandhakrishna10">Github</a>
+                <span style="margin: 0 9px;">|</span>
+                <a href="https://linkedin.com/in/santhosh-kumar-s-it">LinkedIn</a>
+                <span style="margin: 0 9px;">|</span>
+                <a href="https://www.hackerrank.com/profile/santhoshkoh">HackerRank</a>
+            </div>
+        </address>
+    </div>
+    <hr>
+	</body>
+
+	<script>
+        function myfunction() {
+            var x = document.getElementById("nav");
+            if (x.className === "navbar") {
+                x.className += " responsive";
+            } else {
+                x.className = "navbar";
+            }
+        }
+
+        function loadCSVData() {
+            fetch('stocks.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const rows = data.trim().split('\n');
+                    const tableBody = document.querySelector('#stockDetails tbody');
+
+                    tableBody.innerHTML = '';
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const columns = rows[i].split(',');
+                        const newRow = document.createElement('tr');
+
+                        columns.forEach(column => {
+                            const newCell = document.createElement('td');
+                            newCell.textContent = column;
+                            newRow.appendChild(newCell);
+                        });
+
+                        tableBody.appendChild(newRow);
+                    }
+
+                    document.getElementById('addStockButton').style.display = 'block';
+                })
+                .catch(error => console.error('Error loading CSV:', error));
+        }
+
+        function addStock() {
+            const addStockForm = document.getElementById('addStockForm');
+            addStockForm.style.display = 'block';
+        }
+
+        function submitStock() {
+            const productId = document.getElementById('productId').value;
+            const openingStock = document.getElementById('openingStock').value;
+            const purchaseStock = document.getElementById('purchaseStock').value;
+            const salesStock = document.getElementById('salesStock').value;
+
+            const currentStock = parseInt(openingStock) + parseInt(purchaseStock) - parseInt(salesStock);
+
+            const tableBody = document.querySelector('#stock table');
+            const newRow = document.createElement('tr');
+
+            const cells = [productId, openingStock, purchaseStock, salesStock, currentStock];
+            cells.forEach(cellValue => {
+                const newCell = document.createElement('td');
+                newCell.textContent = cellValue;
+                newRow.appendChild(newCell);
+            });
+
+            tableBody.appendChild(newRow);
+
+            document.getElementById('addStockForm').reset();
+            document.getElementById('addStockForm').style.display = 'none';
+        }
+		
+		function moveImage() {
+            const scrollPosition = window.scrollY;
+            const image = document.getElementById('topimage');
+            const translateY = -scrollPosition * 0.9;
+
+            image.style.transform = `translateY(${translateY}px)`;
+        }
+
+    </script>
+</body>
+
+</html>
+
